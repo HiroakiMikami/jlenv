@@ -1,1 +1,0 @@
-export JULIALIB="${BASH_SOURCE%.bash}:$JULIALIB"
