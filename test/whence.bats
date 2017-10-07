@@ -10,12 +10,12 @@ create_executable() {
 }
 
 @test "finds versions where present" {
-  create_executable "1.8" "ruby"
+  create_executable "1.8" "julia"
   create_executable "1.8" "rake"
-  create_executable "2.0" "ruby"
+  create_executable "2.0" "julia"
   create_executable "2.0" "rspec"
 
-  run jlenv-whence ruby
+  run jlenv-whence julia
   assert_success
   assert_output <<OUT
 1.8

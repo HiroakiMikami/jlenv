@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Summary: Show the current Ruby version
+# Summary: Show the current Julia version
 set -e
 [ -n "$JLENV_DEBUG" ] && set -x
 
@@ -27,8 +27,8 @@ version_exists() {
 
 if version_exists "$JLENV_VERSION"; then
   echo "$JLENV_VERSION"
-elif version_exists "${JLENV_VERSION#ruby-}"; then
-  echo "${JLENV_VERSION#ruby-}"
+elif version_exists "${JLENV_VERSION#julia-}"; then
+  echo "${JLENV_VERSION#julia-}"
 else
   echo "jlenv: version \`$JLENV_VERSION' is not installed (set by $(jlenv-version-origin))" >&2
   exit 1

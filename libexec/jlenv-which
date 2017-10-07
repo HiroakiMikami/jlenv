@@ -61,7 +61,7 @@ else
   versions="$(jlenv-whence "$JLENV_COMMAND" || true)"
   if [ -n "$versions" ]; then
     { echo
-      echo "The \`$1' command exists in these Ruby versions:"
+      echo "The \`$1' command exists in these Julia versions:"
       echo "$versions" | sed 's/^/  /g'
       echo
     } >&2

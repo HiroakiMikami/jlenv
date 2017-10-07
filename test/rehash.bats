@@ -32,12 +32,12 @@ create_executable() {
 }
 
 @test "creates shims" {
-  create_executable "1.8" "ruby"
+  create_executable "1.8" "julia"
   create_executable "1.8" "rake"
-  create_executable "2.0" "ruby"
+  create_executable "2.0" "julia"
   create_executable "2.0" "rspec"
 
-  assert [ ! -e "${JLENV_ROOT}/shims/ruby" ]
+  assert [ ! -e "${JLENV_ROOT}/shims/julia" ]
   assert [ ! -e "${JLENV_ROOT}/shims/rake" ]
   assert [ ! -e "${JLENV_ROOT}/shims/rspec" ]
 
@@ -49,7 +49,7 @@ create_executable() {
   assert_output <<OUT
 rake
 rspec
-ruby
+julia
 OUT
 }
 
@@ -59,7 +59,7 @@ OUT
   chmod +x "${JLENV_ROOT}/shims/oldshim1"
 
   create_executable "2.0" "rake"
-  create_executable "2.0" "ruby"
+  create_executable "2.0" "julia"
 
   run jlenv-rehash
   assert_success ""
@@ -87,10 +87,10 @@ OUT
 }
 
 @test "binary install locations containing spaces" {
-  create_executable "dirname1 p247" "ruby"
+  create_executable "dirname1 p247" "julia"
   create_executable "dirname2 preview1" "rspec"
 
-  assert [ ! -e "${JLENV_ROOT}/shims/ruby" ]
+  assert [ ! -e "${JLENV_ROOT}/shims/julia" ]
   assert [ ! -e "${JLENV_ROOT}/shims/rspec" ]
 
   run jlenv-rehash
@@ -100,7 +100,7 @@ OUT
   assert_success
   assert_output <<OUT
 rspec
-ruby
+julia
 OUT
 }
 
@@ -117,15 +117,15 @@ SH
 }
 
 @test "sh-rehash in bash" {
-  create_executable "2.0" "ruby"
+  create_executable "2.0" "julia"
   JLENV_SHELL=bash run jlenv-sh-rehash
   assert_success "hash -r 2>/dev/null || true"
-  assert [ -x "${JLENV_ROOT}/shims/ruby" ]
+  assert [ -x "${JLENV_ROOT}/shims/julia" ]
 }
 
 @test "sh-rehash in fish" {
-  create_executable "2.0" "ruby"
+  create_executable "2.0" "julia"
   JLENV_SHELL=fish run jlenv-sh-rehash
   assert_success ""
-  assert [ -x "${JLENV_ROOT}/shims/ruby" ]
+  assert [ -x "${JLENV_ROOT}/shims/julia" ]
 }

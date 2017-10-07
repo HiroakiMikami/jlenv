@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Summary: List all Ruby versions that contain the given executable
+# Summary: List all Julia versions that contain the given executable
 # Usage: jlenv whence [--path] <command>
 
 set -e

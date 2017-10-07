@@ -11,23 +11,23 @@ setup() {
   cd "$JLENV_TEST_DIR"
 }
 
-stub_system_ruby() {
-  local stub="${JLENV_TEST_DIR}/bin/ruby"
+stub_system_julia() {
+  local stub="${JLENV_TEST_DIR}/bin/julia"
   mkdir -p "$(dirname "$stub")"
   touch "$stub" && chmod +x "$stub"
 }
 
 @test "no versions installed" {
-  stub_system_ruby
+  stub_system_julia
   assert [ ! -d "${JLENV_ROOT}/versions" ]
   run jlenv-versions
   assert_success "* system (set by ${JLENV_ROOT}/version)"
 }
 
-@test "not even system ruby available" {
-  PATH="$(path_without ruby)" run jlenv-versions
+@test "not even system julia available" {
+  PATH="$(path_without julia)" run jlenv-versions
   assert_failure
-  assert_output "Warning: no Ruby detected on the system"
+  assert_output "Warning: no Julia detected on the system"
 }
 
 @test "bare output no versions installed" {
@@ -37,7 +37,7 @@ stub_system_ruby() {
 }
 
 @test "single version installed" {
-  stub_system_ruby
+  stub_system_julia
   create_version "1.9"
   run jlenv-versions
   assert_success
@@ -54,7 +54,7 @@ OUT
 }
 
 @test "multiple versions" {
-  stub_system_ruby
+  stub_system_julia
   create_version "1.8.7"
   create_version "1.9.3"
   create_version "2.0.0"
@@ -69,7 +69,7 @@ OUT
 }
 
 @test "indicates current version" {
-  stub_system_ruby
+  stub_system_julia
   create_version "1.9.3"
   create_version "2.0.0"
   JLENV_VERSION=1.9.3 run jlenv-versions
@@ -93,7 +93,7 @@ OUT
 }
 
 @test "globally selected version" {
-  stub_system_ruby
+  stub_system_julia
   create_version "1.9.3"
   create_version "2.0.0"
   cat > "${JLENV_ROOT}/version" <<<"1.9.3"
@@ -107,15 +107,15 @@ OUT
 }
 
 @test "per-project version" {
-  stub_system_ruby
+  stub_system_julia
   create_version "1.9.3"
   create_version "2.0.0"
-  cat > ".ruby-version" <<<"1.9.3"
+  cat > ".julia-version" <<<"1.9.3"
   run jlenv-versions
   assert_success
   assert_output <<OUT
   system
-* 1.9.3 (set by ${JLENV_TEST_DIR}/.ruby-version)
+* 1.9.3 (set by ${JLENV_TEST_DIR}/.julia-version)
   2.0.0
 OUT
 }

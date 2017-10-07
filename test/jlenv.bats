@@ -52,12 +52,12 @@ load test_helper
 }
 
 @test "adds plugin bin dirs to PATH" {
-  mkdir -p "$JLENV_ROOT"/plugins/ruby-build/bin
+  mkdir -p "$JLENV_ROOT"/plugins/julia-build/bin
   mkdir -p "$JLENV_ROOT"/plugins/jlenv-each/bin
   run jlenv echo -F: "PATH"
   assert_success
   assert_line 0 "${BATS_TEST_DIRNAME%/*}/libexec"
-  assert_line 1 "${JLENV_ROOT}/plugins/ruby-build/bin"
+  assert_line 1 "${JLENV_ROOT}/plugins/julia-build/bin"
   assert_line 2 "${JLENV_ROOT}/plugins/jlenv-each/bin"
 }
 

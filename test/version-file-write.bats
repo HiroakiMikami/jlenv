@@ -15,10 +15,10 @@ setup() {
 }
 
 @test "setting nonexistent version fails" {
-  assert [ ! -e ".ruby-version" ]
-  run jlenv-version-file-write ".ruby-version" "1.8.7"
+  assert [ ! -e ".julia-version" ]
+  run jlenv-version-file-write ".julia-version" "1.8.7"
   assert_failure "jlenv: version \`1.8.7' not installed"
-  assert [ ! -e ".ruby-version" ]
+  assert [ ! -e ".julia-version" ]
 }
 
 @test "writes value to arbitrary file" {

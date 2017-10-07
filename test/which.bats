@@ -13,11 +13,11 @@ create_executable() {
 }
 
 @test "outputs path to executable" {
-  create_executable "1.8" "ruby"
+  create_executable "1.8" "julia"
   create_executable "2.0" "rspec"
 
-  JLENV_VERSION=1.8 run jlenv-which ruby
-  assert_success "${JLENV_ROOT}/versions/1.8/bin/ruby"
+  JLENV_VERSION=1.8 run jlenv-which julia
+  assert_success "${JLENV_ROOT}/versions/1.8/bin/julia"
 
   JLENV_VERSION=2.0 run jlenv-which rspec
   assert_success "${JLENV_ROOT}/versions/2.0/bin/rspec"
@@ -85,7 +85,7 @@ create_executable() {
 }
 
 @test "executable found in other versions" {
-  create_executable "1.8" "ruby"
+  create_executable "1.8" "julia"
   create_executable "1.9" "rspec"
   create_executable "2.0" "rspec"
 
@@ -94,7 +94,7 @@ create_executable() {
   assert_output <<OUT
 jlenv: rspec: command not found
 
-The \`rspec' command exists in these Ruby versions:
+The \`rspec' command exists in these Julia versions:
   1.9
   2.0
 OUT
@@ -115,11 +115,11 @@ SH
 @test "discovers version from jlenv-version-name" {
   mkdir -p "$JLENV_ROOT"
   cat > "${JLENV_ROOT}/version" <<<"1.8"
-  create_executable "1.8" "ruby"
+  create_executable "1.8" "julia"
 
   mkdir -p "$JLENV_TEST_DIR"
   cd "$JLENV_TEST_DIR"
 
-  JLENV_VERSION= run jlenv-which ruby
-  assert_success "${JLENV_ROOT}/versions/1.8/bin/ruby"
+  JLENV_VERSION= run jlenv-which julia
+  assert_success "${JLENV_ROOT}/versions/1.8/bin/julia"
 }

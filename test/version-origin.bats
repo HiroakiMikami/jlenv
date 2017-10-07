@@ -26,9 +26,9 @@ setup() {
 }
 
 @test "detects local file" {
-  touch .ruby-version
+  touch .julia-version
   run jlenv-version-origin
-  assert_success "${PWD}/.ruby-version"
+  assert_success "${PWD}/.julia-version"
 }
 
 @test "reports from hook" {

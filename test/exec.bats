@@ -16,21 +16,21 @@ create_executable() {
 
 @test "fails with invalid version" {
   export JLENV_VERSION="2.0"
-  run jlenv-exec ruby -v
+  run jlenv-exec julia -v
   assert_failure "jlenv: version \`2.0' is not installed (set by JLENV_VERSION environment variable)"
 }
 
 @test "fails with invalid version set from file" {
   mkdir -p "$JLENV_TEST_DIR"
   cd "$JLENV_TEST_DIR"
-  echo 1.9 > .ruby-version
+  echo 1.9 > .julia-version
   run jlenv-exec rspec
-  assert_failure "jlenv: version \`1.9' is not installed (set by $PWD/.ruby-version)"
+  assert_failure "jlenv: version \`1.9' is not installed (set by $PWD/.julia-version)"
 }
 
 @test "completes with names of executables" {
   export JLENV_VERSION="2.0"
-  create_executable "ruby" "#!/bin/sh"
+  create_executable "julia" "#!/bin/sh"
   create_executable "rake" "#!/bin/sh"
 
   jlenv-rehash
@@ -39,7 +39,7 @@ create_executable() {
   assert_output <<OUT
 --help
 rake
-ruby
+julia
 OUT
 }
 
@@ -57,7 +57,7 @@ SH
 
 @test "forwards all arguments" {
   export JLENV_VERSION="2.0"
-  create_executable "ruby" <<SH
+  create_executable "julia" <<SH
 #!$BASH
 echo \$0
 for arg; do
@@ -66,44 +66,44 @@ for arg; do
 done
 SH
 
-  run jlenv-exec ruby -w "/path to/ruby script.rb" -- extra args
+  run jlenv-exec julia -w "/path to/julia script.rb" -- extra args
   assert_success
   assert_output <<OUT
-${JLENV_ROOT}/versions/2.0/bin/ruby
+${JLENV_ROOT}/versions/2.0/bin/julia
   -w
-  /path to/ruby script.rb
+  /path to/julia script.rb
   --
   extra
   args
 OUT
 }
 
-@test "supports ruby -S <cmd>" {
+@test "supports julia -S <cmd>" {
   export JLENV_VERSION="2.0"
 
-  # emulate `ruby -S' behavior
-  create_executable "ruby" <<SH
+  # emulate `julia -S' behavior
+  create_executable "julia" <<SH
 #!$BASH
 if [[ \$1 == "-S"* ]]; then
-  found="\$(PATH="\${RUBYPATH:-\$PATH}" which \$2)"
-  # assert that the found executable has ruby for shebang
-  if head -1 "\$found" | grep ruby >/dev/null; then
+  found="\$(PATH="\${JULIAPATH:-\$PATH}" which \$2)"
+  # assert that the found executable has julia for shebang
+  if head -1 "\$found" | grep julia >/dev/null; then
     \$BASH "\$found"
   else
-    echo "ruby: no Ruby script found in input (LoadError)" >&2
+    echo "julia: no Julia script found in input (LoadError)" >&2
     exit 1
   fi
 else
-  echo 'ruby 2.0 (jlenv test)'
+  echo 'julia 2.0 (jlenv test)'
 fi
 SH
 
   create_executable "rake" <<SH
-#!/usr/bin/env ruby
+#!/usr/bin/env julia
 echo hello rake
 SH
 
   jlenv-rehash
-  run ruby -S rake
+  run julia -S rake
   assert_success "hello rake"
 }

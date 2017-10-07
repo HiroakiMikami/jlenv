@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Summary: List all Ruby versions available to jlenv
+# Summary: List all Julia versions available to jlenv
 # Usage: jlenv versions [--bare] [--skip-aliases]
 #
-# Lists all Ruby versions found in `$JLENV_ROOT/versions/*'.
+# Lists all Julia versions found in `$JLENV_ROOT/versions/*'.
 
 set -e
 [ -n "$JLENV_DEBUG" ] && set -x
@@ -87,7 +87,7 @@ print_version() {
 }
 
 # Include "system" in the non-bare output, if it exists
-if [ -n "$include_system" ] && JLENV_VERSION=system jlenv-which ruby >/dev/null 2>&1; then
+if [ -n "$include_system" ] && JLENV_VERSION=system jlenv-which julia >/dev/null 2>&1; then
   print_version system
 fi
 
@@ -104,6 +104,6 @@ done
 shopt -u nullglob
 
 if [ "$num_versions" -eq 0 ] && [ -n "$include_system" ]; then
-  echo "Warning: no Ruby detected on the system" >&2
+  echo "Warning: no Julia detected on the system" >&2
   exit 1
 fi

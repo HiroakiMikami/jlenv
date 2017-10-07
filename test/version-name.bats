@@ -47,7 +47,7 @@ SH
   create_version "1.8.7"
   create_version "1.9.3"
 
-  cat > ".ruby-version" <<<"1.8.7"
+  cat > ".julia-version" <<<"1.8.7"
   run jlenv-version-name
   assert_success "1.8.7"
 
@@ -63,7 +63,7 @@ SH
   run jlenv-version-name
   assert_success "1.8.7"
 
-  cat > ".ruby-version" <<<"1.9.3"
+  cat > ".julia-version" <<<"1.9.3"
   run jlenv-version-name
   assert_success "1.9.3"
 }
@@ -75,7 +75,7 @@ SH
 
 @test "version with prefix in name" {
   create_version "1.8.7"
-  cat > ".ruby-version" <<<"ruby-1.8.7"
+  cat > ".julia-version" <<<"julia-1.8.7"
   run jlenv-version-name
   assert_success
   assert_output "1.8.7"

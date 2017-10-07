@@ -1,28 +1,28 @@
-# Groom your app’s Ruby environment with jlenv.
+# Groom your app’s Julia environment with jlenv.
 
-Use jlenv to pick a Ruby version for your application and guarantee
+Use jlenv to pick a Julia version for your application and guarantee
 that your development environment matches production. Put jlenv to work
-with [Bundler](http://bundler.io/) for painless Ruby upgrades and
+with [Bundler](http://bundler.io/) for painless Julia upgrades and
 bulletproof deployments.
 
-**Powerful in development.** Specify your app's Ruby version once,
+**Powerful in development.** Specify your app's Julia version once,
   in a single file. Keep all your teammates on the same page. No
-  headaches running apps on different versions of Ruby. Just Works™
+  headaches running apps on different versions of Julia. Just Works™
   from the command line and with app servers like [Pow](http://pow.cx).
-  Override the Ruby version anytime: just set an environment variable.
+  Override the Julia version anytime: just set an environment variable.
 
 **Rock-solid in production.** Your application's executables are its
   interface with ops. With jlenv and [Bundler
   binstubs](https://github.com/jlenv/jlenv/wiki/Understanding-binstubs)
   you'll never again need to `cd` in a cron job or Chef recipe to
-  ensure you've selected the right runtime. The Ruby version
+  ensure you've selected the right runtime. The Julia version
   dependency lives in one place—your app—so upgrades and rollbacks are
   atomic, even when you switch versions.
 
-**One thing well.** jlenv is concerned solely with switching Ruby
+**One thing well.** jlenv is concerned solely with switching Julia
   versions. It's simple and predictable. A rich plugin ecosystem lets
-  you tailor it to suit your needs. Compile your own Ruby versions, or
-  use the [ruby-build][]
+  you tailor it to suit your needs. Compile your own Julia versions, or
+  use the [julia-build][]
   plugin to automate the process. Specify per-application environment
   variables with [jlenv-vars](https://github.com/jlenv/jlenv-vars).
   See more [plugins on the
@@ -36,17 +36,17 @@ RVM?**](https://github.com/jlenv/jlenv/wiki/Why-jlenv%3F)
 * [How It Works](#how-it-works)
   * [Understanding PATH](#understanding-path)
   * [Understanding Shims](#understanding-shims)
-  * [Choosing the Ruby Version](#choosing-the-ruby-version)
-  * [Locating the Ruby Installation](#locating-the-ruby-installation)
+  * [Choosing the Julia Version](#choosing-the-julia-version)
+  * [Locating the Julia Installation](#locating-the-julia-installation)
 * [Installation](#installation)
   * [Homebrew on macOS](#homebrew-on-macos)
     * [Upgrading with Homebrew](#upgrading-with-homebrew)
   * [Basic GitHub Checkout](#basic-github-checkout)
     * [Upgrading with Git](#upgrading-with-git)
   * [How jlenv hooks into your shell](#how-jlenv-hooks-into-your-shell)
-  * [Installing Ruby versions](#installing-ruby-versions)
-    * [Installing Ruby gems](#installing-ruby-gems)
-  * [Uninstalling Ruby versions](#uninstalling-ruby-versions)
+  * [Installing Julia versions](#installing-julia-versions)
+    * [Installing Julia gems](#installing-julia-gems)
+  * [Uninstalling Julia versions](#uninstalling-julia-versions)
   * [Uninstalling jlenv](#uninstalling-jlenv)
 * [Command Reference](#command-reference)
   * [jlenv local](#jlenv-local)
@@ -62,14 +62,14 @@ RVM?**](https://github.com/jlenv/jlenv/wiki/Why-jlenv%3F)
 
 ## How It Works
 
-At a high level, jlenv intercepts Ruby commands using shim
-executables injected into your `PATH`, determines which Ruby version
+At a high level, jlenv intercepts Julia commands using shim
+executables injected into your `PATH`, determines which Julia version
 has been specified by your application, and passes your commands along
-to the correct Ruby installation.
+to the correct Julia installation.
 
 ### Understanding PATH
 
-When you run a command like `ruby` or `rake`, your operating system
+When you run a command like `julia` or `rake`, your operating system
 searches through a list of directories to find an executable file with
 that name. This list of directories lives in an environment variable
 called `PATH`, with each directory in the list separated by a colon:
@@ -90,8 +90,8 @@ jlenv works by inserting a directory of _shims_ at the front of your
     ~/.jlenv/shims:/usr/local/bin:/usr/bin:/bin
 
 Through a process called _rehashing_, jlenv maintains shims in that
-directory to match every Ruby command across every installed version
-of Ruby—`irb`, `gem`, `rake`, `rails`, `ruby`, and so on.
+directory to match every Julia command across every installed version
+of Julia—`irb`, `gem`, `rake`, `rails`, `julia`, and so on.
 
 Shims are lightweight executables that simply pass your command along
 to jlenv. So with jlenv installed, when you run, say, `rake`, your
@@ -102,43 +102,43 @@ operating system will do the following:
 * Run the shim named `rake`, which in turn passes the command along to
   jlenv
 
-### Choosing the Ruby Version
+### Choosing the Julia Version
 
-When you execute a shim, jlenv determines which Ruby version to use by
+When you execute a shim, jlenv determines which Julia version to use by
 reading it from the following sources, in this order:
 
 1. The `JLENV_VERSION` environment variable, if specified. You can use
    the [`jlenv shell`](#jlenv-shell) command to set this environment
    variable in your current shell session.
 
-2. The first `.ruby-version` file found by searching the directory of the
+2. The first `.julia-version` file found by searching the directory of the
    script you are executing and each of its parent directories until reaching
    the root of your filesystem.
 
-3. The first `.ruby-version` file found by searching the current working
+3. The first `.julia-version` file found by searching the current working
    directory and each of its parent directories until reaching the root of your
-   filesystem. You can modify the `.ruby-version` file in the current working
+   filesystem. You can modify the `.julia-version` file in the current working
    directory with the [`jlenv local`](#jlenv-local) command.
 
 4. The global `~/.jlenv/version` file. You can modify this file using
    the [`jlenv global`](#jlenv-global) command. If the global version
    file is not present, jlenv assumes you want to use the "system"
-   Ruby—i.e. whatever version would be run if jlenv weren't in your
+   Julia—i.e. whatever version would be run if jlenv weren't in your
    path.
 
-### Locating the Ruby Installation
+### Locating the Julia Installation
 
-Once jlenv has determined which version of Ruby your application has
-specified, it passes the command along to the corresponding Ruby
+Once jlenv has determined which version of Julia your application has
+specified, it passes the command along to the corresponding Julia
 installation.
 
-Each Ruby version is installed into its own directory under
+Each Julia version is installed into its own directory under
 `~/.jlenv/versions`. For example, you might have these versions
 installed:
 
 * `~/.jlenv/versions/1.8.7-p371/`
 * `~/.jlenv/versions/1.9.3-p327/`
-* `~/.jlenv/versions/jruby-1.7.1/`
+* `~/.jlenv/versions/jjulia-1.7.1/`
 
 Version names to jlenv are simply the names of the directories in
 `~/.jlenv/versions`.
@@ -160,12 +160,12 @@ If you're on macOS, we recommend installing jlenv with
     $ brew install jlenv
     ~~~
 
-   Note that this also installs `ruby-build`, so you'll be ready to
-   install other Ruby versions out of the box.
+   Note that this also installs `julia-build`, so you'll be ready to
+   install other Julia versions out of the box.
 
 2. Run `jlenv init` and follow the instructions to set up
    jlenv integration with your shell. This is the step that will make
-   running `ruby` "see" the Ruby version that you choose with jlenv.
+   running `julia` "see" the Julia version that you choose with jlenv.
 
 3. Close your Terminal window and open a new one so your changes take
    effect.
@@ -177,26 +177,26 @@ If you're on macOS, we recommend installing jlenv with
     $ curl -fsSL https://github.com/jlenv/jlenv-installer/raw/master/bin/jlenv-doctor | bash
     Checking for `jlenv' in PATH: /usr/local/bin/jlenv
     Checking for jlenv shims in PATH: OK
-    Checking `jlenv install' support: /usr/local/bin/jlenv-install (ruby-build 20170523)
-    Counting installed Ruby versions: none
-      There aren't any Ruby versions installed under `~/.jlenv/versions'.
-      You can install Ruby versions like so: jlenv install 2.2.4
-    Checking RubyGems settings: OK
+    Checking `jlenv install' support: /usr/local/bin/jlenv-install (julia-build 20170523)
+    Counting installed Julia versions: none
+      There aren't any Julia versions installed under `~/.jlenv/versions'.
+      You can install Julia versions like so: jlenv install 2.2.4
+    Checking JuliaGems settings: OK
     Auditing installed plugins: OK
     ~~~
 
-5. That's it! Installing jlenv includes ruby-build, so now you're ready to
-   [install some other Ruby versions](#installing-ruby-versions) using
+5. That's it! Installing jlenv includes julia-build, so now you're ready to
+   [install some other Julia versions](#installing-julia-versions) using
    `jlenv install`.
 
 
 #### Upgrading with Homebrew
 
-To upgrade to the latest jlenv and update ruby-build with newly released
-Ruby versions, upgrade the Homebrew packages:
+To upgrade to the latest jlenv and update julia-build with newly released
+Julia versions, upgrade the Homebrew packages:
 
 ~~~ sh
-$ brew upgrade jlenv ruby-build
+$ brew upgrade jlenv julia-build
 ~~~
 
 
@@ -231,7 +231,7 @@ a systemwide install.
 
 3. Run `~/.jlenv/bin/jlenv init` and follow the instructions to set up
    jlenv integration with your shell. This is the step that will make
-   running `ruby` "see" the Ruby version that you choose with jlenv.
+   running `julia` "see" the Julia version that you choose with jlenv.
 
 4. Restart your shell so that PATH changes take effect. (Opening a new
    terminal tab will usually do it.)
@@ -243,17 +243,17 @@ a systemwide install.
     $ curl -fsSL https://github.com/jlenv/jlenv-installer/raw/master/bin/jlenv-doctor | bash
     Checking for `jlenv' in PATH: /usr/local/bin/jlenv
     Checking for jlenv shims in PATH: OK
-    Checking `jlenv install' support: /usr/local/bin/jlenv-install (ruby-build 20170523)
-    Counting installed Ruby versions: none
-      There aren't any Ruby versions installed under `~/.jlenv/versions'.
-      You can install Ruby versions like so: jlenv install 2.2.4
-    Checking RubyGems settings: OK
+    Checking `jlenv install' support: /usr/local/bin/jlenv-install (julia-build 20170523)
+    Counting installed Julia versions: none
+      There aren't any Julia versions installed under `~/.jlenv/versions'.
+      You can install Julia versions like so: jlenv install 2.2.4
+    Checking JuliaGems settings: OK
     Auditing installed plugins: OK
     ~~~
 
-6. _(Optional)_ Install [ruby-build][], which provides the
+6. _(Optional)_ Install [julia-build][], which provides the
    `jlenv install` command that simplifies the process of
-   [installing new Ruby versions](#installing-ruby-versions).
+   [installing new Julia versions](#installing-julia-versions).
 
 #### Upgrading with Git
 
@@ -297,10 +297,10 @@ opposed to this idea. Here's what `jlenv init` actually does:
 Run `jlenv init -` for yourself to see exactly what happens under the
 hood.
 
-### Installing Ruby versions
+### Installing Julia versions
 
 The `jlenv install` command doesn't ship with jlenv out of the box, but
-is provided by the [ruby-build][] project. If you installed it either
+is provided by the [julia-build][] project. If you installed it either
 as part of GitHub checkout process outlined above or via Homebrew, you
 should be able to:
 
@@ -308,19 +308,19 @@ should be able to:
 # list all available versions:
 $ jlenv install -l
 
-# install a Ruby version:
+# install a Julia version:
 $ jlenv install 2.0.0-p247
 ~~~
 
 Alternatively to the `install` command, you can download and compile
-Ruby manually as a subdirectory of `~/.jlenv/versions/`. An entry in
-that directory can also be a symlink to a Ruby version installed
+Julia manually as a subdirectory of `~/.jlenv/versions/`. An entry in
+that directory can also be a symlink to a Julia version installed
 elsewhere on the filesystem. jlenv doesn't care; it will simply treat
-any entry in the `versions/` directory as a separate Ruby version.
+any entry in the `versions/` directory as a separate Julia version.
 
-#### Installing Ruby gems
+#### Installing Julia gems
 
-Once you've installed some Ruby versions, you'll want to install gems.
+Once you've installed some Julia versions, you'll want to install gems.
 First, ensure that the target version for your project is the one you want by
 checking `jlenv version` (see [Command Reference](#command-reference)). Select
 another version using `jlenv local 2.0.0-p247`, for example. Then, proceed to
@@ -330,7 +330,7 @@ install gems as you normally would:
 $ gem install bundler
 ```
 
-**You don't need sudo** to install gems. Typically, the Ruby versions will be
+**You don't need sudo** to install gems. Typically, the Julia versions will be
 installed and writeable by your user. No extra privileges are required to
 install gems.
 
@@ -338,20 +338,20 @@ Check the location where gems are being installed with `gem env`:
 
 ```sh
 $ gem env home
-# => ~/.jlenv/versions/<ruby-version>/lib/ruby/gems/...
+# => ~/.jlenv/versions/<julia-version>/lib/julia/gems/...
 ```
 
-### Uninstalling Ruby versions
+### Uninstalling Julia versions
 
-As time goes on, Ruby versions you install will accumulate in your
+As time goes on, Julia versions you install will accumulate in your
 `~/.jlenv/versions` directory.
 
-To remove old Ruby versions, simply `rm -rf` the directory of the
+To remove old Julia versions, simply `rm -rf` the directory of the
 version you want to remove. You can find the directory of a particular
-Ruby version with the `jlenv prefix` command, e.g. `jlenv prefix
+Julia version with the `jlenv prefix` command, e.g. `jlenv prefix
 1.8.7-p357`.
 
-The [ruby-build][] plugin provides an `jlenv uninstall` command to
+The [julia-build][] plugin provides an `jlenv uninstall` command to
 automate the removal process.
 
 ### Uninstalling jlenv
@@ -359,16 +359,16 @@ automate the removal process.
 The simplicity of jlenv makes it easy to temporarily disable it, or
 uninstall from the system.
 
-1. To **disable** jlenv managing your Ruby versions, simply remove the
+1. To **disable** jlenv managing your Julia versions, simply remove the
   `jlenv init` line from your shell startup configuration. This will
   remove jlenv shims directory from PATH, and future invocations like
-  `ruby` will execute the system Ruby version, as before jlenv.
+  `julia` will execute the system Julia version, as before jlenv.
 
-  `jlenv` will still be accessible on the command line, but your Ruby
+  `jlenv` will still be accessible on the command line, but your Julia
   apps won't be affected by version switching.
 
 2. To completely **uninstall** jlenv, perform step (1) and then remove
-   its root directory. This will **delete all Ruby versions** that were
+   its root directory. This will **delete all Julia versions** that were
    installed under `` `jlenv root`/versions/ `` directory:
 
         rm -rf `jlenv root`
@@ -385,8 +385,8 @@ first argument. The most common subcommands are:
 
 ### jlenv local
 
-Sets a local application-specific Ruby version by writing the version
-name to a `.ruby-version` file in the current directory. This version
+Sets a local application-specific Julia version by writing the version
+name to a `.julia-version` file in the current directory. This version
 overrides the global version, and can be overridden itself by setting
 the `JLENV_VERSION` environment variable or with the `jlenv shell`
 command.
@@ -400,14 +400,14 @@ configured local version. You can also unset the local version:
 
 ### jlenv global
 
-Sets the global version of Ruby to be used in all shells by writing
+Sets the global version of Julia to be used in all shells by writing
 the version name to the `~/.jlenv/version` file. This version can be
-overridden by an application-specific `.ruby-version` file, or by
+overridden by an application-specific `.julia-version` file, or by
 setting the `JLENV_VERSION` environment variable.
 
     $ jlenv global 1.8.7-p352
 
-The special version name `system` tells jlenv to use the system Ruby
+The special version name `system` tells jlenv to use the system Julia
 (detected by searching your `$PATH`).
 
 When run without a version number, `jlenv global` reports the
@@ -415,11 +415,11 @@ currently configured global version.
 
 ### jlenv shell
 
-Sets a shell-specific Ruby version by setting the `JLENV_VERSION`
+Sets a shell-specific Julia version by setting the `JLENV_VERSION`
 environment variable in your shell. This version overrides
 application-specific versions and the global version.
 
-    $ jlenv shell jruby-1.7.1
+    $ jlenv shell jjulia-1.7.1
 
 When run without a version number, `jlenv shell` reports the current
 value of `JLENV_VERSION`. You can also unset the shell version:
@@ -431,24 +431,24 @@ the installation instructions) in order to use this command. If you
 prefer not to use shell integration, you may simply set the
 `JLENV_VERSION` variable yourself:
 
-    $ export JLENV_VERSION=jruby-1.7.1
+    $ export JLENV_VERSION=jjulia-1.7.1
 
 ### jlenv versions
 
-Lists all Ruby versions known to jlenv, and shows an asterisk next to
+Lists all Julia versions known to jlenv, and shows an asterisk next to
 the currently active version.
 
     $ jlenv versions
       1.8.7-p352
       1.9.2-p290
     * 1.9.3-p327 (set by /Users/sam/.jlenv/version)
-      jruby-1.7.1
+      jjulia-1.7.1
       rbx-1.2.4
       ree-1.8.7-2011.03
 
 ### jlenv version
 
-Displays the currently active Ruby version, along with information on
+Displays the currently active Julia version, along with information on
 how it was set.
 
     $ jlenv version
@@ -456,9 +456,9 @@ how it was set.
 
 ### jlenv rehash
 
-Installs shims for all Ruby executables known to jlenv (i.e.,
+Installs shims for all Julia executables known to jlenv (i.e.,
 `~/.jlenv/versions/*/bin/*`). Run this command after you install a new
-version of Ruby, or install a gem that provides commands.
+version of Julia, or install a gem that provides commands.
 
     $ jlenv rehash
 
@@ -472,11 +472,11 @@ you run the given command.
 
 ### jlenv whence
 
-Lists all Ruby versions with the given command installed.
+Lists all Julia versions with the given command installed.
 
     $ jlenv whence rackup
     1.9.3-p327
-    jruby-1.7.1
+    jjulia-1.7.1
     ree-1.8.7-2011.03
 
 ## Environment variables
@@ -485,11 +485,11 @@ You can affect how jlenv operates with the following settings:
 
 name | default | description
 -----|---------|------------
-`JLENV_VERSION` | | Specifies the Ruby version to be used.<br>Also see [`jlenv shell`](#jlenv-shell)
-`JLENV_ROOT` | `~/.jlenv` | Defines the directory under which Ruby versions and shims reside.<br>Also see `jlenv root`
+`JLENV_VERSION` | | Specifies the Julia version to be used.<br>Also see [`jlenv shell`](#jlenv-shell)
+`JLENV_ROOT` | `~/.jlenv` | Defines the directory under which Julia versions and shims reside.<br>Also see `jlenv root`
 `JLENV_DEBUG` | | Outputs debug information.<br>Also as: `jlenv --debug <subcommand>`
 `JLENV_HOOK_PATH` | [_see wiki_][hooks] | Colon-separated list of paths searched for jlenv hooks.
-`JLENV_DIR` | `$PWD` | Directory to start searching for `.ruby-version` files.
+`JLENV_DIR` | `$PWD` | Directory to start searching for `.julia-version` files.
 
 ## Development
 
@@ -506,5 +506,5 @@ Please feel free to submit pull requests and file bugs on the [issue
 tracker](https://github.com/jlenv/jlenv/issues).
 
 
-  [ruby-build]: https://github.com/jlenv/ruby-build#readme
+  [julia-build]: https://github.com/jlenv/julia-build#readme
   [hooks]: https://github.com/jlenv/jlenv/wiki/Authoring-plugins#jlenv-hooks

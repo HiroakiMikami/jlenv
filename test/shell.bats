@@ -5,7 +5,7 @@ load test_helper
 @test "no shell version" {
   mkdir -p "${JLENV_TEST_DIR}/myproject"
   cd "${JLENV_TEST_DIR}/myproject"
-  echo "1.2.3" > .ruby-version
+  echo "1.2.3" > .julia-version
   JLENV_VERSION="" run jlenv-sh-shell
   assert_failure "jlenv: no shell-specific version configured"
 }

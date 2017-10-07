@@ -5,7 +5,7 @@ load test_helper
 @test "prefix" {
   mkdir -p "${JLENV_TEST_DIR}/myproject"
   cd "${JLENV_TEST_DIR}/myproject"
-  echo "1.2.3" > .ruby-version
+  echo "1.2.3" > .julia-version
   mkdir -p "${JLENV_ROOT}/versions/1.2.3"
   run jlenv-prefix
   assert_success "${JLENV_ROOT}/versions/1.2.3"
@@ -18,8 +18,8 @@ load test_helper
 
 @test "prefix for system" {
   mkdir -p "${JLENV_TEST_DIR}/bin"
-  touch "${JLENV_TEST_DIR}/bin/ruby"
-  chmod +x "${JLENV_TEST_DIR}/bin/ruby"
+  touch "${JLENV_TEST_DIR}/bin/julia"
+  chmod +x "${JLENV_TEST_DIR}/bin/julia"
   JLENV_VERSION="system" run jlenv-prefix
   assert_success "$JLENV_TEST_DIR"
 }
@@ -28,7 +28,7 @@ load test_helper
   mkdir -p "${BATS_TEST_DIRNAME}/libexec"
   cat >"${BATS_TEST_DIRNAME}/libexec/jlenv-which" <<OUT
 #!/bin/sh
-echo /bin/ruby
+echo /bin/julia
 OUT
   chmod +x "${BATS_TEST_DIRNAME}/libexec/jlenv-which"
   JLENV_VERSION="system" run jlenv-prefix
@@ -37,6 +37,6 @@ OUT
 }
 
 @test "prefix for invalid system" {
-  PATH="$(path_without ruby)" run jlenv-prefix system
+  PATH="$(path_without julia)" run jlenv-prefix system
   assert_failure "jlenv: system version not found in PATH"
 }

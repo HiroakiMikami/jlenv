@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Summary: Display prefix for a Ruby version
+# Summary: Display prefix for a Julia version
 # Usage: jlenv prefix [<version>]
 #
-# Displays the directory where a Ruby version is installed. If no
+# Displays the directory where a Julia version is installed. If no
 # version is given, `jlenv prefix' displays the location of the
 # currently selected version.
 
@@ -22,9 +22,9 @@ elif [ -z "$JLENV_VERSION" ]; then
 fi
 
 if [ "$JLENV_VERSION" = "system" ]; then
-  if RUBY_PATH="$(jlenv-which ruby 2>/dev/null)"; then
-    RUBY_PATH="${RUBY_PATH%/*}"
-    JLENV_PREFIX_PATH="${RUBY_PATH%/bin}"
+  if JULIA_PATH="$(jlenv-which julia 2>/dev/null)"; then
+    JULIA_PATH="${JULIA_PATH%/*}"
+    JLENV_PREFIX_PATH="${JULIA_PATH%/bin}"
     echo "${JLENV_PREFIX_PATH:-/}"
     exit
   else

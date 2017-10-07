@@ -46,7 +46,7 @@ set -e
 [ -n "\$JLENV_DEBUG" ] && set -x
 
 program="\${0##*/}"
-if [ "\$program" = "ruby" ]; then
+if [ "\$program" = "julia" ]; then
   for arg; do
     case "\$arg" in
     -e* | -- ) break ;;
@@ -79,7 +79,7 @@ remove_outdated_shims() {
   done
 }
 
-# List basenames of executables for every Ruby version
+# List basenames of executables for every Julia version
 list_executable_names() {
   local version file
   jlenv-versions --bare --skip-aliases | \

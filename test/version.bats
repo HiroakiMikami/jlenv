@@ -25,9 +25,9 @@ setup() {
 
 @test "set by local file" {
   create_version "1.9.3"
-  cat > ".ruby-version" <<<"1.9.3"
+  cat > ".julia-version" <<<"1.9.3"
   run jlenv-version
-  assert_success "1.9.3 (set by ${PWD}/.ruby-version)"
+  assert_success "1.9.3 (set by ${PWD}/.julia-version)"
 }
 
 @test "set by global file" {
