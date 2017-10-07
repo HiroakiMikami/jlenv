@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+#
+# Summary: Run an executable with the selected Ruby version
+#
+# Usage: jlenv exec <command> [arg1 arg2...]
+#
+# Runs an executable by first preparing PATH so that the selected Ruby
+# version's `bin' directory is at the front.
+#
+# For example, if the currently selected Ruby version is 1.9.3-p327:
+#   jlenv exec bundle install
+#
+# is equivalent to:
+#   PATH="$JLENV_ROOT/versions/1.9.3-p327/bin:$PATH" bundle install
+
+set -e
+[ -n "$JLENV_DEBUG" ] && set -x
+
+# Provide jlenv completions
+if [ "$1" = "--complete" ]; then
+  exec jlenv-shims --short
+fi
+
+JLENV_VERSION="$(jlenv-version-name)"
+JLENV_COMMAND="$1"
+
+if [ -z "$JLENV_COMMAND" ]; then
+  jlenv-help --usage exec >&2
+  exit 1
+fi
+
+export JLENV_VERSION
+JLENV_COMMAND_PATH="$(jlenv-which "$JLENV_COMMAND")"
+JLENV_BIN_PATH="${JLENV_COMMAND_PATH%/*}"
+
+OLDIFS="$IFS"
+IFS=$'\n' scripts=(`jlenv-hooks exec`)
+IFS="$OLDIFS"
+for script in "${scripts[@]}"; do
+  source "$script"
+done
+
+shift 1
+if [ "$JLENV_VERSION" != "system" ]; then
+  export PATH="${JLENV_BIN_PATH}:${PATH}"
+fi
+exec -a "$JLENV_COMMAND" "$JLENV_COMMAND_PATH" "$@"

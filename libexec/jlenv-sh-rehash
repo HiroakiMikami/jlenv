@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -e
+[ -n "$JLENV_DEBUG" ] && set -x
+
+# Provide jlenv completions
+if [ "$1" = "--complete" ]; then
+  exec jlenv-rehash --complete
+fi
+
+shell="$(basename "${JLENV_SHELL:-$SHELL}")"
+
+# When jlenv shell integration is enabled, delegate to jlenv-rehash,
+# then tell the shell to empty its command lookup cache.
+jlenv-rehash
+
+case "$shell" in
+fish )
+  # no rehash support
+  ;;
+* )
+  echo "hash -r 2>/dev/null || true"
+  ;;
+esac

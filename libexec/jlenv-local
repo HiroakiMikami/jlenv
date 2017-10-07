@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+#
+# Summary: Set or show the local application-specific Ruby version
+#
+# Usage: jlenv local <version>
+#        jlenv local --unset
+#
+# Sets the local application-specific Ruby version by writing the
+# version name to a file named `.ruby-version'.
+#
+# When you run a Ruby command, jlenv will look for a `.ruby-version'
+# file in the current directory and each parent directory. If no such
+# file is found in the tree, jlenv will use the global Ruby version
+# specified with `jlenv global'. A version specified with the
+# `JLENV_VERSION' environment variable takes precedence over local
+# and global versions.
+#
+# <version> should be a string matching a Ruby version known to jlenv.
+# The special version string `system' will use your default system Ruby.
+# Run `jlenv versions' for a list of available Ruby versions.
+
+set -e
+[ -n "$JLENV_DEBUG" ] && set -x
+
+# Provide jlenv completions
+if [ "$1" = "--complete" ]; then
+  echo --unset
+  echo system
+  exec jlenv-versions --bare
+fi
+
+JLENV_VERSION="$1"
+
+if [ "$JLENV_VERSION" = "--unset" ]; then
+  rm -f .ruby-version
+elif [ -n "$JLENV_VERSION" ]; then
+  jlenv-version-file-write .ruby-version "$JLENV_VERSION"
+else
+  if version_file="$(jlenv-version-file "$PWD")"; then
+    jlenv-version-file-read "$version_file"
+  else
+    echo "jlenv: no local version configured for this directory" >&2
+    exit 1
+  fi
+fi

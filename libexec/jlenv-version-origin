@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Summary: Explain how the current Ruby version is set
+set -e
+[ -n "$JLENV_DEBUG" ] && set -x
+
+unset JLENV_VERSION_ORIGIN
+
+OLDIFS="$IFS"
+IFS=$'\n' scripts=(`jlenv-hooks version-origin`)
+IFS="$OLDIFS"
+for script in "${scripts[@]}"; do
+  source "$script"
+done
+
+if [ -n "$JLENV_VERSION_ORIGIN" ]; then
+  echo "$JLENV_VERSION_ORIGIN"
+elif [ -n "$JLENV_VERSION" ]; then
+  echo "JLENV_VERSION environment variable"
+else
+  jlenv-version-file
+fi

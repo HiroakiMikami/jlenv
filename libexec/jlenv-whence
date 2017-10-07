@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Summary: List all Ruby versions that contain the given executable
+# Usage: jlenv whence [--path] <command>
+
+set -e
+[ -n "$JLENV_DEBUG" ] && set -x
+
+# Provide jlenv completions
+if [ "$1" = "--complete" ]; then
+  echo --path
+  exec jlenv-shims --short
+fi
+
+if [ "$1" = "--path" ]; then
+  print_paths="1"
+  shift
+else
+  print_paths=""
+fi
+
+whence() {
+  local command="$1"
+  jlenv-versions --bare | while read version; do
+    path="$(jlenv-prefix "$version")/bin/${command}"
+    if [ -x "$path" ]; then
+      [ "$print_paths" ] && echo "$path" || echo "$version"
+    fi
+  done
+}
+
+JLENV_COMMAND="$1"
+if [ -z "$JLENV_COMMAND" ]; then
+  jlenv-help --usage whence >&2
+  exit 1
+fi
+
+result="$(whence "$JLENV_COMMAND")"
+[ -n "$result" ] && echo "$result"

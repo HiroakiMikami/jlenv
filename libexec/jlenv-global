@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#
+# Summary: Set or show the global Ruby version
+#
+# Usage: jlenv global <version>
+#
+# Sets the global Ruby version. You can override the global version at
+# any time by setting a directory-specific version with `jlenv local'
+# or by setting the `JLENV_VERSION' environment variable.
+#
+# <version> should be a string matching a Ruby version known to jlenv.
+# The special version string `system' will use your default system Ruby.
+# Run `jlenv versions' for a list of available Ruby versions.
+
+set -e
+[ -n "$JLENV_DEBUG" ] && set -x
+
+# Provide jlenv completions
+if [ "$1" = "--complete" ]; then
+  echo system
+  exec jlenv-versions --bare
+fi
+
+JLENV_VERSION="$1"
+JLENV_VERSION_FILE="${JLENV_ROOT}/version"
+
+if [ -n "$JLENV_VERSION" ]; then
+  jlenv-version-file-write "$JLENV_VERSION_FILE" "$JLENV_VERSION"
+else
+  jlenv-version-file-read "$JLENV_VERSION_FILE" || echo system
+fi
