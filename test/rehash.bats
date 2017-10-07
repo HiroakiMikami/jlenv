@@ -33,13 +33,9 @@ create_executable() {
 
 @test "creates shims" {
   create_executable "1.8" "julia"
-  create_executable "1.8" "rake"
   create_executable "2.0" "julia"
-  create_executable "2.0" "rspec"
 
   assert [ ! -e "${JLENV_ROOT}/shims/julia" ]
-  assert [ ! -e "${JLENV_ROOT}/shims/rake" ]
-  assert [ ! -e "${JLENV_ROOT}/shims/rspec" ]
 
   run jlenv-rehash
   assert_success ""
@@ -47,8 +43,6 @@ create_executable() {
   run ls "${JLENV_ROOT}/shims"
   assert_success
   assert_output <<OUT
-rake
-rspec
 julia
 OUT
 }
@@ -88,10 +82,8 @@ OUT
 
 @test "binary install locations containing spaces" {
   create_executable "dirname1 p247" "julia"
-  create_executable "dirname2 preview1" "rspec"
 
   assert [ ! -e "${JLENV_ROOT}/shims/julia" ]
-  assert [ ! -e "${JLENV_ROOT}/shims/rspec" ]
 
   run jlenv-rehash
   assert_success ""
@@ -99,7 +91,6 @@ OUT
   run ls "${JLENV_ROOT}/shims"
   assert_success
   assert_output <<OUT
-rspec
 julia
 OUT
 }

@@ -31,14 +31,12 @@ create_executable() {
 @test "completes with names of executables" {
   export JLENV_VERSION="2.0"
   create_executable "julia" "#!/bin/sh"
-  create_executable "rake" "#!/bin/sh"
 
   jlenv-rehash
   run jlenv-completions exec
   assert_success
   assert_output <<OUT
 --help
-rake
 julia
 OUT
 }
