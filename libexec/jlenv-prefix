@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Summary: Display prefix for a Julia version
+# Usage: jlenv prefix [<version>]
+#
+# Displays the directory where a Julia version is installed. If no
+# version is given, `jlenv prefix' displays the location of the
+# currently selected version.
+
+set -e
+[ -n "$JLENV_DEBUG" ] && set -x
+
+# Provide jlenv completions
+if [ "$1" = "--complete" ]; then
+  echo system
+  exec jlenv-versions --bare
+fi
+
+if [ -n "$1" ]; then
+  export JLENV_VERSION="$1"
+elif [ -z "$JLENV_VERSION" ]; then
+  JLENV_VERSION="$(jlenv-version-name)"
+fi
+
+if [ "$JLENV_VERSION" = "system" ]; then
+  if JULIA_PATH="$(jlenv-which julia 2>/dev/null)"; then
+    JULIA_PATH="${JULIA_PATH%/*}"
+    JLENV_PREFIX_PATH="${JULIA_PATH%/bin}"
+    echo "${JLENV_PREFIX_PATH:-/}"
+    exit
+  else
+    echo "jlenv: system version not found in PATH" >&2
+    exit 1
+  fi
+fi
+
+JLENV_PREFIX_PATH="${JLENV_ROOT}/versions/${JLENV_VERSION}"
+if [ ! -d "$JLENV_PREFIX_PATH" ]; then
+  echo "jlenv: version \`${JLENV_VERSION}' not installed" >&2
+  exit 1
+fi
+
+echo "$JLENV_PREFIX_PATH"

@@ -3,8 +3,8 @@
 load test_helper
 
 setup() {
-  mkdir -p "$RBENV_TEST_DIR"
-  cd "$RBENV_TEST_DIR"
+  mkdir -p "$JLENV_TEST_DIR"
+  cd "$JLENV_TEST_DIR"
 }
 
 create_file() {
@@ -13,63 +13,63 @@ create_file() {
 }
 
 @test "detects global 'version' file" {
-  create_file "${RBENV_ROOT}/version"
-  run rbenv-version-file
-  assert_success "${RBENV_ROOT}/version"
+  create_file "${JLENV_ROOT}/version"
+  run jlenv-version-file
+  assert_success "${JLENV_ROOT}/version"
 }
 
 @test "prints global file if no version files exist" {
-  assert [ ! -e "${RBENV_ROOT}/version" ]
-  assert [ ! -e ".ruby-version" ]
-  run rbenv-version-file
-  assert_success "${RBENV_ROOT}/version"
+  assert [ ! -e "${JLENV_ROOT}/version" ]
+  assert [ ! -e ".julia-version" ]
+  run jlenv-version-file
+  assert_success "${JLENV_ROOT}/version"
 }
 
 @test "in current directory" {
-  create_file ".ruby-version"
-  run rbenv-version-file
-  assert_success "${RBENV_TEST_DIR}/.ruby-version"
+  create_file ".julia-version"
+  run jlenv-version-file
+  assert_success "${JLENV_TEST_DIR}/.julia-version"
 }
 
 @test "in parent directory" {
-  create_file ".ruby-version"
+  create_file ".julia-version"
   mkdir -p project
   cd project
-  run rbenv-version-file
-  assert_success "${RBENV_TEST_DIR}/.ruby-version"
+  run jlenv-version-file
+  assert_success "${JLENV_TEST_DIR}/.julia-version"
 }
 
 @test "topmost file has precedence" {
-  create_file ".ruby-version"
-  create_file "project/.ruby-version"
+  create_file ".julia-version"
+  create_file "project/.julia-version"
   cd project
-  run rbenv-version-file
-  assert_success "${RBENV_TEST_DIR}/project/.ruby-version"
+  run jlenv-version-file
+  assert_success "${JLENV_TEST_DIR}/project/.julia-version"
 }
 
-@test "RBENV_DIR has precedence over PWD" {
-  create_file "widget/.ruby-version"
-  create_file "project/.ruby-version"
+@test "JLENV_DIR has precedence over PWD" {
+  create_file "widget/.julia-version"
+  create_file "project/.julia-version"
   cd project
-  RBENV_DIR="${RBENV_TEST_DIR}/widget" run rbenv-version-file
-  assert_success "${RBENV_TEST_DIR}/widget/.ruby-version"
+  JLENV_DIR="${JLENV_TEST_DIR}/widget" run jlenv-version-file
+  assert_success "${JLENV_TEST_DIR}/widget/.julia-version"
 }
 
-@test "PWD is searched if RBENV_DIR yields no results" {
+@test "PWD is searched if JLENV_DIR yields no results" {
   mkdir -p "widget/blank"
-  create_file "project/.ruby-version"
+  create_file "project/.julia-version"
   cd project
-  RBENV_DIR="${RBENV_TEST_DIR}/widget/blank" run rbenv-version-file
-  assert_success "${RBENV_TEST_DIR}/project/.ruby-version"
+  JLENV_DIR="${JLENV_TEST_DIR}/widget/blank" run jlenv-version-file
+  assert_success "${JLENV_TEST_DIR}/project/.julia-version"
 }
 
 @test "finds version file in target directory" {
-  create_file "project/.ruby-version"
-  run rbenv-version-file "${PWD}/project"
-  assert_success "${RBENV_TEST_DIR}/project/.ruby-version"
+  create_file "project/.julia-version"
+  run jlenv-version-file "${PWD}/project"
+  assert_success "${JLENV_TEST_DIR}/project/.julia-version"
 }
 
 @test "fails when no version file in target directory" {
-  run rbenv-version-file "$PWD"
+  run jlenv-version-file "$PWD"
   assert_failure ""
 }

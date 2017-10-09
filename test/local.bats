@@ -3,57 +3,57 @@
 load test_helper
 
 setup() {
-  mkdir -p "${RBENV_TEST_DIR}/myproject"
-  cd "${RBENV_TEST_DIR}/myproject"
+  mkdir -p "${JLENV_TEST_DIR}/myproject"
+  cd "${JLENV_TEST_DIR}/myproject"
 }
 
 @test "no version" {
-  assert [ ! -e "${PWD}/.ruby-version" ]
-  run rbenv-local
-  assert_failure "rbenv: no local version configured for this directory"
+  assert [ ! -e "${PWD}/.julia-version" ]
+  run jlenv-local
+  assert_failure "jlenv: no local version configured for this directory"
 }
 
 @test "local version" {
-  echo "1.2.3" > .ruby-version
-  run rbenv-local
+  echo "1.2.3" > .julia-version
+  run jlenv-local
   assert_success "1.2.3"
 }
 
 @test "discovers version file in parent directory" {
-  echo "1.2.3" > .ruby-version
+  echo "1.2.3" > .julia-version
   mkdir -p "subdir" && cd "subdir"
-  run rbenv-local
+  run jlenv-local
   assert_success "1.2.3"
 }
 
-@test "ignores RBENV_DIR" {
-  echo "1.2.3" > .ruby-version
+@test "ignores JLENV_DIR" {
+  echo "1.2.3" > .julia-version
   mkdir -p "$HOME"
-  echo "2.0-home" > "${HOME}/.ruby-version"
-  RBENV_DIR="$HOME" run rbenv-local
+  echo "2.0-home" > "${HOME}/.julia-version"
+  JLENV_DIR="$HOME" run jlenv-local
   assert_success "1.2.3"
 }
 
 @test "sets local version" {
-  mkdir -p "${RBENV_ROOT}/versions/1.2.3"
-  run rbenv-local 1.2.3
+  mkdir -p "${JLENV_ROOT}/versions/1.2.3"
+  run jlenv-local 1.2.3
   assert_success ""
-  assert [ "$(cat .ruby-version)" = "1.2.3" ]
+  assert [ "$(cat .julia-version)" = "1.2.3" ]
 }
 
 @test "changes local version" {
-  echo "1.0-pre" > .ruby-version
-  mkdir -p "${RBENV_ROOT}/versions/1.2.3"
-  run rbenv-local
+  echo "1.0-pre" > .julia-version
+  mkdir -p "${JLENV_ROOT}/versions/1.2.3"
+  run jlenv-local
   assert_success "1.0-pre"
-  run rbenv-local 1.2.3
+  run jlenv-local 1.2.3
   assert_success ""
-  assert [ "$(cat .ruby-version)" = "1.2.3" ]
+  assert [ "$(cat .julia-version)" = "1.2.3" ]
 }
 
 @test "unsets local version" {
-  touch .ruby-version
-  run rbenv-local --unset
+  touch .julia-version
+  run jlenv-local --unset
   assert_success ""
-  assert [ ! -e .ruby-version ]
+  assert [ ! -e .julia-version ]
 }

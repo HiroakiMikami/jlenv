@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Summary: List hook scripts for a given jlenv command
+# Usage: jlenv hooks <command>
+
+set -e
+[ -n "$JLENV_DEBUG" ] && set -x
+
+# Provide jlenv completions
+if [ "$1" = "--complete" ]; then
+  echo exec
+  echo rehash
+  echo version-name
+  echo version-origin
+  echo which
+  exit
+fi
+
+JLENV_COMMAND="$1"
+if [ -z "$JLENV_COMMAND" ]; then
+  jlenv-help --usage hooks >&2
+  exit 1
+fi
+
+if ! enable -f "${BASH_SOURCE%/*}"/jlenv-realpath.dylib realpath 2>/dev/null; then
+  if [ -n "$JLENV_NATIVE_EXT" ]; then
+    echo "jlenv: failed to load \`realpath' builtin" >&2
+    exit 1
+  fi
+READLINK=$(type -p greadlink readlink | head -1)
+if [ -z "$READLINK" ]; then
+  echo "jlenv: cannot find readlink - are you missing GNU coreutils?" >&2
+  exit 1
+fi
+
+resolve_link() {
+  $READLINK "$1"
+}
+
+realpath() {
+  local cwd="$PWD"
+  local path="$1"
+  local name
+
+  while [ -n "$path" ]; do
+    name="${path##*/}"
+    [ "$name" = "$path" ] || cd "${path%/*}"
+    path="$(resolve_link "$name" || true)"
+  done
+
+  echo "${PWD}/$name"
+  cd "$cwd"
+}
+fi
+
+IFS=: hook_paths=($JLENV_HOOK_PATH)
+
+shopt -s nullglob
+for path in "${hook_paths[@]}"; do
+  for script in "$path/$JLENV_COMMAND"/*.bash; do
+    realpath "$script"
+  done
+done
+shopt -u nullglob

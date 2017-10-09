@@ -5,7 +5,7 @@ load test_helper
 create_executable() {
   local bin
   if [[ $1 == */* ]]; then bin="$1"
-  else bin="${RBENV_ROOT}/versions/${1}/bin"
+  else bin="${JLENV_ROOT}/versions/${1}/bin"
   fi
   mkdir -p "$bin"
   touch "${bin}/$2"
@@ -13,88 +13,88 @@ create_executable() {
 }
 
 @test "outputs path to executable" {
-  create_executable "1.8" "ruby"
+  create_executable "1.8" "julia"
   create_executable "2.0" "rspec"
 
-  RBENV_VERSION=1.8 run rbenv-which ruby
-  assert_success "${RBENV_ROOT}/versions/1.8/bin/ruby"
+  JLENV_VERSION=1.8 run jlenv-which julia
+  assert_success "${JLENV_ROOT}/versions/1.8/bin/julia"
 
-  RBENV_VERSION=2.0 run rbenv-which rspec
-  assert_success "${RBENV_ROOT}/versions/2.0/bin/rspec"
+  JLENV_VERSION=2.0 run jlenv-which rspec
+  assert_success "${JLENV_ROOT}/versions/2.0/bin/rspec"
 }
 
 @test "searches PATH for system version" {
-  create_executable "${RBENV_TEST_DIR}/bin" "kill-all-humans"
-  create_executable "${RBENV_ROOT}/shims" "kill-all-humans"
+  create_executable "${JLENV_TEST_DIR}/bin" "kill-all-humans"
+  create_executable "${JLENV_ROOT}/shims" "kill-all-humans"
 
-  RBENV_VERSION=system run rbenv-which kill-all-humans
-  assert_success "${RBENV_TEST_DIR}/bin/kill-all-humans"
+  JLENV_VERSION=system run jlenv-which kill-all-humans
+  assert_success "${JLENV_TEST_DIR}/bin/kill-all-humans"
 }
 
 @test "searches PATH for system version (shims prepended)" {
-  create_executable "${RBENV_TEST_DIR}/bin" "kill-all-humans"
-  create_executable "${RBENV_ROOT}/shims" "kill-all-humans"
+  create_executable "${JLENV_TEST_DIR}/bin" "kill-all-humans"
+  create_executable "${JLENV_ROOT}/shims" "kill-all-humans"
 
-  PATH="${RBENV_ROOT}/shims:$PATH" RBENV_VERSION=system run rbenv-which kill-all-humans
-  assert_success "${RBENV_TEST_DIR}/bin/kill-all-humans"
+  PATH="${JLENV_ROOT}/shims:$PATH" JLENV_VERSION=system run jlenv-which kill-all-humans
+  assert_success "${JLENV_TEST_DIR}/bin/kill-all-humans"
 }
 
 @test "searches PATH for system version (shims appended)" {
-  create_executable "${RBENV_TEST_DIR}/bin" "kill-all-humans"
-  create_executable "${RBENV_ROOT}/shims" "kill-all-humans"
+  create_executable "${JLENV_TEST_DIR}/bin" "kill-all-humans"
+  create_executable "${JLENV_ROOT}/shims" "kill-all-humans"
 
-  PATH="$PATH:${RBENV_ROOT}/shims" RBENV_VERSION=system run rbenv-which kill-all-humans
-  assert_success "${RBENV_TEST_DIR}/bin/kill-all-humans"
+  PATH="$PATH:${JLENV_ROOT}/shims" JLENV_VERSION=system run jlenv-which kill-all-humans
+  assert_success "${JLENV_TEST_DIR}/bin/kill-all-humans"
 }
 
 @test "searches PATH for system version (shims spread)" {
-  create_executable "${RBENV_TEST_DIR}/bin" "kill-all-humans"
-  create_executable "${RBENV_ROOT}/shims" "kill-all-humans"
+  create_executable "${JLENV_TEST_DIR}/bin" "kill-all-humans"
+  create_executable "${JLENV_ROOT}/shims" "kill-all-humans"
 
-  PATH="${RBENV_ROOT}/shims:${RBENV_ROOT}/shims:/tmp/non-existent:$PATH:${RBENV_ROOT}/shims" \
-    RBENV_VERSION=system run rbenv-which kill-all-humans
-  assert_success "${RBENV_TEST_DIR}/bin/kill-all-humans"
+  PATH="${JLENV_ROOT}/shims:${JLENV_ROOT}/shims:/tmp/non-existent:$PATH:${JLENV_ROOT}/shims" \
+    JLENV_VERSION=system run jlenv-which kill-all-humans
+  assert_success "${JLENV_TEST_DIR}/bin/kill-all-humans"
 }
 
 @test "doesn't include current directory in PATH search" {
   export PATH="$(path_without "kill-all-humans")"
-  mkdir -p "$RBENV_TEST_DIR"
-  cd "$RBENV_TEST_DIR"
+  mkdir -p "$JLENV_TEST_DIR"
+  cd "$JLENV_TEST_DIR"
   touch kill-all-humans
   chmod +x kill-all-humans
-  RBENV_VERSION=system run rbenv-which kill-all-humans
-  assert_failure "rbenv: kill-all-humans: command not found"
+  JLENV_VERSION=system run jlenv-which kill-all-humans
+  assert_failure "jlenv: kill-all-humans: command not found"
 }
 
 @test "version not installed" {
   create_executable "2.0" "rspec"
-  RBENV_VERSION=1.9 run rbenv-which rspec
-  assert_failure "rbenv: version \`1.9' is not installed (set by RBENV_VERSION environment variable)"
+  JLENV_VERSION=1.9 run jlenv-which rspec
+  assert_failure "jlenv: version \`1.9' is not installed (set by JLENV_VERSION environment variable)"
 }
 
 @test "no executable found" {
   create_executable "1.8" "rspec"
-  RBENV_VERSION=1.8 run rbenv-which rake
-  assert_failure "rbenv: rake: command not found"
+  JLENV_VERSION=1.8 run jlenv-which rake
+  assert_failure "jlenv: rake: command not found"
 }
 
 @test "no executable found for system version" {
   export PATH="$(path_without "rake")"
-  RBENV_VERSION=system run rbenv-which rake
-  assert_failure "rbenv: rake: command not found"
+  JLENV_VERSION=system run jlenv-which rake
+  assert_failure "jlenv: rake: command not found"
 }
 
 @test "executable found in other versions" {
-  create_executable "1.8" "ruby"
+  create_executable "1.8" "julia"
   create_executable "1.9" "rspec"
   create_executable "2.0" "rspec"
 
-  RBENV_VERSION=1.8 run rbenv-which rspec
+  JLENV_VERSION=1.8 run jlenv-which rspec
   assert_failure
   assert_output <<OUT
-rbenv: rspec: command not found
+jlenv: rspec: command not found
 
-The \`rspec' command exists in these Ruby versions:
+The \`rspec' command exists in these Julia versions:
   1.9
   2.0
 OUT
@@ -107,19 +107,19 @@ echo HELLO="\$(printf ":%s" "\${hellos[@]}")"
 exit
 SH
 
-  IFS=$' \t\n' RBENV_VERSION=system run rbenv-which anything
+  IFS=$' \t\n' JLENV_VERSION=system run jlenv-which anything
   assert_success
   assert_output "HELLO=:hello:ugly:world:again"
 }
 
-@test "discovers version from rbenv-version-name" {
-  mkdir -p "$RBENV_ROOT"
-  cat > "${RBENV_ROOT}/version" <<<"1.8"
-  create_executable "1.8" "ruby"
+@test "discovers version from jlenv-version-name" {
+  mkdir -p "$JLENV_ROOT"
+  cat > "${JLENV_ROOT}/version" <<<"1.8"
+  create_executable "1.8" "julia"
 
-  mkdir -p "$RBENV_TEST_DIR"
-  cd "$RBENV_TEST_DIR"
+  mkdir -p "$JLENV_TEST_DIR"
+  cd "$JLENV_TEST_DIR"
 
-  RBENV_VERSION= run rbenv-which ruby
-  assert_success "${RBENV_ROOT}/versions/1.8/bin/ruby"
+  JLENV_VERSION= run jlenv-which julia
+  assert_success "${JLENV_ROOT}/versions/1.8/bin/julia"
 }

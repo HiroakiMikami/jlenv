@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Usage: jlenv version-file-write <file> <version>
+
+set -e
+[ -n "$JLENV_DEBUG" ] && set -x
+
+JLENV_VERSION_FILE="$1"
+JLENV_VERSION="$2"
+
+if [ -z "$JLENV_VERSION" ] || [ -z "$JLENV_VERSION_FILE" ]; then
+  jlenv-help --usage version-file-write >&2
+  exit 1
+fi
+
+# Make sure the specified version is installed.
+jlenv-prefix "$JLENV_VERSION" >/dev/null
+
+# Write the version out to disk.
+echo "$JLENV_VERSION" > "$JLENV_VERSION_FILE"

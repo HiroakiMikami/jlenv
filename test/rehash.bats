@@ -3,104 +3,95 @@
 load test_helper
 
 create_executable() {
-  local bin="${RBENV_ROOT}/versions/${1}/bin"
+  local bin="${JLENV_ROOT}/versions/${1}/bin"
   mkdir -p "$bin"
   touch "${bin}/$2"
   chmod +x "${bin}/$2"
 }
 
 @test "empty rehash" {
-  assert [ ! -d "${RBENV_ROOT}/shims" ]
-  run rbenv-rehash
+  assert [ ! -d "${JLENV_ROOT}/shims" ]
+  run jlenv-rehash
   assert_success ""
-  assert [ -d "${RBENV_ROOT}/shims" ]
-  rmdir "${RBENV_ROOT}/shims"
+  assert [ -d "${JLENV_ROOT}/shims" ]
+  rmdir "${JLENV_ROOT}/shims"
 }
 
 @test "non-writable shims directory" {
-  mkdir -p "${RBENV_ROOT}/shims"
-  chmod -w "${RBENV_ROOT}/shims"
-  run rbenv-rehash
-  assert_failure "rbenv: cannot rehash: ${RBENV_ROOT}/shims isn't writable"
+  mkdir -p "${JLENV_ROOT}/shims"
+  chmod -w "${JLENV_ROOT}/shims"
+  run jlenv-rehash
+  assert_failure "jlenv: cannot rehash: ${JLENV_ROOT}/shims isn't writable"
 }
 
 @test "rehash in progress" {
-  mkdir -p "${RBENV_ROOT}/shims"
-  touch "${RBENV_ROOT}/shims/.rbenv-shim"
-  run rbenv-rehash
-  assert_failure "rbenv: cannot rehash: ${RBENV_ROOT}/shims/.rbenv-shim exists"
+  mkdir -p "${JLENV_ROOT}/shims"
+  touch "${JLENV_ROOT}/shims/.jlenv-shim"
+  run jlenv-rehash
+  assert_failure "jlenv: cannot rehash: ${JLENV_ROOT}/shims/.jlenv-shim exists"
 }
 
 @test "creates shims" {
-  create_executable "1.8" "ruby"
-  create_executable "1.8" "rake"
-  create_executable "2.0" "ruby"
-  create_executable "2.0" "rspec"
+  create_executable "1.8" "julia"
+  create_executable "2.0" "julia"
 
-  assert [ ! -e "${RBENV_ROOT}/shims/ruby" ]
-  assert [ ! -e "${RBENV_ROOT}/shims/rake" ]
-  assert [ ! -e "${RBENV_ROOT}/shims/rspec" ]
+  assert [ ! -e "${JLENV_ROOT}/shims/julia" ]
 
-  run rbenv-rehash
+  run jlenv-rehash
   assert_success ""
 
-  run ls "${RBENV_ROOT}/shims"
+  run ls "${JLENV_ROOT}/shims"
   assert_success
   assert_output <<OUT
-rake
-rspec
-ruby
+julia
 OUT
 }
 
 @test "removes outdated shims" {
-  mkdir -p "${RBENV_ROOT}/shims"
-  touch "${RBENV_ROOT}/shims/oldshim1"
-  chmod +x "${RBENV_ROOT}/shims/oldshim1"
+  mkdir -p "${JLENV_ROOT}/shims"
+  touch "${JLENV_ROOT}/shims/oldshim1"
+  chmod +x "${JLENV_ROOT}/shims/oldshim1"
 
   create_executable "2.0" "rake"
-  create_executable "2.0" "ruby"
+  create_executable "2.0" "julia"
 
-  run rbenv-rehash
+  run jlenv-rehash
   assert_success ""
 
-  assert [ ! -e "${RBENV_ROOT}/shims/oldshim1" ]
+  assert [ ! -e "${JLENV_ROOT}/shims/oldshim1" ]
 }
 
 @test "do exact matches when removing stale shims" {
   create_executable "2.0" "unicorn_rails"
   create_executable "2.0" "rspec-core"
 
-  rbenv-rehash
+  jlenv-rehash
 
-  cp "$RBENV_ROOT"/shims/{rspec-core,rspec}
-  cp "$RBENV_ROOT"/shims/{rspec-core,rails}
-  cp "$RBENV_ROOT"/shims/{rspec-core,uni}
-  chmod +x "$RBENV_ROOT"/shims/{rspec,rails,uni}
+  cp "$JLENV_ROOT"/shims/{rspec-core,rspec}
+  cp "$JLENV_ROOT"/shims/{rspec-core,rails}
+  cp "$JLENV_ROOT"/shims/{rspec-core,uni}
+  chmod +x "$JLENV_ROOT"/shims/{rspec,rails,uni}
 
-  run rbenv-rehash
+  run jlenv-rehash
   assert_success ""
 
-  assert [ ! -e "${RBENV_ROOT}/shims/rails" ]
-  assert [ ! -e "${RBENV_ROOT}/shims/rake" ]
-  assert [ ! -e "${RBENV_ROOT}/shims/uni" ]
+  assert [ ! -e "${JLENV_ROOT}/shims/rails" ]
+  assert [ ! -e "${JLENV_ROOT}/shims/rake" ]
+  assert [ ! -e "${JLENV_ROOT}/shims/uni" ]
 }
 
 @test "binary install locations containing spaces" {
-  create_executable "dirname1 p247" "ruby"
-  create_executable "dirname2 preview1" "rspec"
+  create_executable "dirname1 p247" "julia"
 
-  assert [ ! -e "${RBENV_ROOT}/shims/ruby" ]
-  assert [ ! -e "${RBENV_ROOT}/shims/rspec" ]
+  assert [ ! -e "${JLENV_ROOT}/shims/julia" ]
 
-  run rbenv-rehash
+  run jlenv-rehash
   assert_success ""
 
-  run ls "${RBENV_ROOT}/shims"
+  run ls "${JLENV_ROOT}/shims"
   assert_success
   assert_output <<OUT
-rspec
-ruby
+julia
 OUT
 }
 
@@ -111,21 +102,21 @@ echo HELLO="\$(printf ":%s" "\${hellos[@]}")"
 exit
 SH
 
-  IFS=$' \t\n' run rbenv-rehash
+  IFS=$' \t\n' run jlenv-rehash
   assert_success
   assert_output "HELLO=:hello:ugly:world:again"
 }
 
 @test "sh-rehash in bash" {
-  create_executable "2.0" "ruby"
-  RBENV_SHELL=bash run rbenv-sh-rehash
+  create_executable "2.0" "julia"
+  JLENV_SHELL=bash run jlenv-sh-rehash
   assert_success "hash -r 2>/dev/null || true"
-  assert [ -x "${RBENV_ROOT}/shims/ruby" ]
+  assert [ -x "${JLENV_ROOT}/shims/julia" ]
 }
 
 @test "sh-rehash in fish" {
-  create_executable "2.0" "ruby"
-  RBENV_SHELL=fish run rbenv-sh-rehash
+  create_executable "2.0" "julia"
+  JLENV_SHELL=fish run jlenv-sh-rehash
   assert_success ""
-  assert [ -x "${RBENV_ROOT}/shims/ruby" ]
+  assert [ -x "${JLENV_ROOT}/shims/julia" ]
 }

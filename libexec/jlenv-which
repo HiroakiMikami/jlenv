@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+#
+# Summary: Display the full path to an executable
+#
+# Usage: jlenv which <command>
+#
+# Displays the full path to the executable that jlenv will invoke when
+# you run the given command.
+
+set -e
+[ -n "$JLENV_DEBUG" ] && set -x
+
+# Provide jlenv completions
+if [ "$1" = "--complete" ]; then
+  exec jlenv-shims --short
+fi
+
+remove_from_path() {
+  local path_to_remove="$1"
+  local path_before
+  local result=":${PATH//\~/$HOME}:"
+  while [ "$path_before" != "$result" ]; do
+    path_before="$result"
+    result="${result//:$path_to_remove:/:}"
+  done
+  result="${result%:}"
+  echo "${result#:}"
+}
+
+JLENV_COMMAND="$1"
+
+if [ -z "$JLENV_COMMAND" ]; then
+  jlenv-help --usage which >&2
+  exit 1
+fi
+
+JLENV_VERSION="${JLENV_VERSION:-$(jlenv-version-name)}"
+
+if [ "$JLENV_VERSION" = "system" ]; then
+  PATH="$(remove_from_path "${JLENV_ROOT}/shims")"
+  JLENV_COMMAND_PATH="$(command -v "$JLENV_COMMAND" || true)"
+else
+  JLENV_COMMAND_PATH="${JLENV_ROOT}/versions/${JLENV_VERSION}/bin/${JLENV_COMMAND}"
+fi
+
+OLDIFS="$IFS"
+IFS=$'\n' scripts=(`jlenv-hooks which`)
+IFS="$OLDIFS"
+for script in "${scripts[@]}"; do
+  source "$script"
+done
+
+if [ -x "$JLENV_COMMAND_PATH" ]; then
+  echo "$JLENV_COMMAND_PATH"
+elif [ "$JLENV_VERSION" != "system" ] && [ ! -d "${JLENV_ROOT}/versions/${JLENV_VERSION}" ]; then
+  echo "jlenv: version \`$JLENV_VERSION' is not installed (set by $(jlenv-version-origin))" >&2
+  exit 1
+else
+  echo "jlenv: $JLENV_COMMAND: command not found" >&2
+
+  versions="$(jlenv-whence "$JLENV_COMMAND" || true)"
+  if [ -n "$versions" ]; then
+    { echo
+      echo "The \`$1' command exists in these Julia versions:"
+      echo "$versions" | sed 's/^/  /g'
+      echo
+    } >&2
+  fi
+
+  exit 127
+fi

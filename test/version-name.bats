@@ -3,31 +3,31 @@
 load test_helper
 
 create_version() {
-  mkdir -p "${RBENV_ROOT}/versions/$1"
+  mkdir -p "${JLENV_ROOT}/versions/$1"
 }
 
 setup() {
-  mkdir -p "$RBENV_TEST_DIR"
-  cd "$RBENV_TEST_DIR"
+  mkdir -p "$JLENV_TEST_DIR"
+  cd "$JLENV_TEST_DIR"
 }
 
 @test "no version selected" {
-  assert [ ! -d "${RBENV_ROOT}/versions" ]
-  run rbenv-version-name
+  assert [ ! -d "${JLENV_ROOT}/versions" ]
+  run jlenv-version-name
   assert_success "system"
 }
 
 @test "system version is not checked for existance" {
-  RBENV_VERSION=system run rbenv-version-name
+  JLENV_VERSION=system run jlenv-version-name
   assert_success "system"
 }
 
-@test "RBENV_VERSION can be overridden by hook" {
+@test "JLENV_VERSION can be overridden by hook" {
   create_version "1.8.7"
   create_version "1.9.3"
-  create_hook version-name test.bash <<<"RBENV_VERSION=1.9.3"
+  create_hook version-name test.bash <<<"JLENV_VERSION=1.9.3"
 
-  RBENV_VERSION=1.8.7 run rbenv-version-name
+  JLENV_VERSION=1.8.7 run jlenv-version-name
   assert_success "1.9.3"
 }
 
@@ -37,21 +37,21 @@ hellos=(\$(printf "hello\\tugly world\\nagain"))
 echo HELLO="\$(printf ":%s" "\${hellos[@]}")"
 SH
 
-  export RBENV_VERSION=system
-  IFS=$' \t\n' run rbenv-version-name env
+  export JLENV_VERSION=system
+  IFS=$' \t\n' run jlenv-version-name env
   assert_success
   assert_line "HELLO=:hello:ugly:world:again"
 }
 
-@test "RBENV_VERSION has precedence over local" {
+@test "JLENV_VERSION has precedence over local" {
   create_version "1.8.7"
   create_version "1.9.3"
 
-  cat > ".ruby-version" <<<"1.8.7"
-  run rbenv-version-name
+  cat > ".julia-version" <<<"1.8.7"
+  run jlenv-version-name
   assert_success "1.8.7"
 
-  RBENV_VERSION=1.9.3 run rbenv-version-name
+  JLENV_VERSION=1.9.3 run jlenv-version-name
   assert_success "1.9.3"
 }
 
@@ -59,24 +59,24 @@ SH
   create_version "1.8.7"
   create_version "1.9.3"
 
-  cat > "${RBENV_ROOT}/version" <<<"1.8.7"
-  run rbenv-version-name
+  cat > "${JLENV_ROOT}/version" <<<"1.8.7"
+  run jlenv-version-name
   assert_success "1.8.7"
 
-  cat > ".ruby-version" <<<"1.9.3"
-  run rbenv-version-name
+  cat > ".julia-version" <<<"1.9.3"
+  run jlenv-version-name
   assert_success "1.9.3"
 }
 
 @test "missing version" {
-  RBENV_VERSION=1.2 run rbenv-version-name
-  assert_failure "rbenv: version \`1.2' is not installed (set by RBENV_VERSION environment variable)"
+  JLENV_VERSION=1.2 run jlenv-version-name
+  assert_failure "jlenv: version \`1.2' is not installed (set by JLENV_VERSION environment variable)"
 }
 
 @test "version with prefix in name" {
   create_version "1.8.7"
-  cat > ".ruby-version" <<<"ruby-1.8.7"
-  run rbenv-version-name
+  cat > ".julia-version" <<<"julia-1.8.7"
+  run jlenv-version-name
   assert_success
   assert_output "1.8.7"
 }
