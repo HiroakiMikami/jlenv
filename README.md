@@ -34,8 +34,10 @@ that your development environment matches production.
   * [Choosing the Julia Version](#choosing-the-julia-version)
   * [Locating the Julia Installation](#locating-the-julia-installation)
 * [Installation](#installation)
+<!--
   * [Homebrew on macOS](#homebrew-on-macos)
     * [Upgrading with Homebrew](#upgrading-with-homebrew)
+-->
   * [Basic GitHub Checkout](#basic-github-checkout)
     * [Upgrading with Git](#upgrading-with-git)
   * [How jlenv hooks into your shell](#how-jlenv-hooks-into-your-shell)
@@ -242,8 +244,7 @@ hood.
 
 The `jlenv install` command doesn't ship with jlenv out of the box, but
 is provided by the [julia-build][] project. If you installed it either
-as part of GitHub checkout process outlined above or via Homebrew, you
-should be able to:
+as part of GitHub checkout process outlined above, you should be able to:
 
 ~~~ sh
 # list all available versions:
@@ -290,11 +291,6 @@ uninstall from the system.
    installed under `` `jlenv root`/versions/ `` directory:
 
         rm -rf `jlenv root`
-
-   If you've installed jlenv using a package manager, as a final step
-   perform the jlenv package removal. For instance, for Homebrew:
-
-        brew uninstall jlenv
 
 ## Command Reference
 
