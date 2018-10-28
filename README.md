@@ -166,7 +166,7 @@ a systemwide install.
 1. Clone jlenv into `~/.jlenv`.
 
     ~~~ sh
-    $ git clone https://github.com/jlenv/jlenv.git ~/.jlenv
+    $ git clone https://github.com/HiroakiMikami/jlenv.git ~/.jlenv
     ~~~
 
     Optionally, try to compile dynamic bash extension to speed up jlenv. Don't
@@ -395,7 +395,7 @@ name | default | description
 ## Development
 
 The jlenv source code is [hosted on
-GitHub](https://github.com/jlenv/jlenv). It's clean, modular,
+GitHub](https://github.com/HiroakiMikami/jlenv). It's clean, modular,
 and easy to understand, even if you're not a shell hacker.
 
 Tests are executed using [Bats](https://github.com/sstephenson/bats):
